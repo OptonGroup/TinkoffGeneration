@@ -15,82 +15,67 @@
 typedef long long ll;
 using namespace std;
 ll LINF = 2LL << 32LL;
-int INF = 2 << 18;
+int INF = 2 << 28;
 
-
-vector <pair<int, int>> g[1000];
-vector<int> ans1(1000), ans2(1000), cnt, pr;
 ll n;
-
-struct structure{
-	int from, to, dist;
-	structure(){}
-	structure(int from, int to, int dist) : 
-		from(from), to(to), dist(dist) {}
-
-	bool operator>(const structure& arg) const {
-		return dist > arg.dist;
-	}
-};
-
-vector<int> dijkstra(vector<int> ans){
-	for (int i = 0; i < 1000; ++i){
-		ans[i] = INF;
-	}
-
-	ans[1] = 0;
-
-	priority_queue<structure, vector<structure>, greater<structure>> q;
-
-    q.push({0, 1, 0});
-
-    while (!q.empty()) {
-        structure c = q.top();
-        q.pop();
-
-        int dst = c.dist, v = c.to, f = c.from;
-		// if (f > 1)
-			cnt[f]++;
-
-        if (ans[v] < dst) {
-            continue;
-        }
-
-        for (pair<int, int> e: g[v]) {
-            int u = e.first, len_vu = e.second;
-
-            int n_dst = dst + len_vu;
-            if (n_dst < ans[u]) {
-                ans[u] = n_dst;
-                q.push({v, u, n_dst});
-				pr[u] = v;
-            }
-        }
-    }
-
-	return ans;
-}
+vector <vector<pair<ll, ll>>> g(500);
+vector <pair<ll, ll>> cnt(500, {INF, 0});
+vector <ll> oosp(500, 1), pred(500, -1), csp(500, 1);
 
 int main() {
-#ifndef ONLINE_JUDGE
-	freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout);
-#endif // !ONLINE_JUDGE
-	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-
 	cin >> n;
-	cnt.resize(n+1, 0); pr.resize(n+1, 0);
-	for (int i = 1; i <= n; ++i){
-		for (int j = 1; j <= n; ++j){
-			int v;
+	for (ll i = 0; i < n; ++i){
+		for (ll j = 0; j < n; ++j){
+			ll v;
 			cin >> v;
-			if (v > 0) g[i].push_back({j, v});
+			if (v != -1 && i != j) g[i].push_back({j, v});
 		}
 	}
-
-	ans1 = dijkstra(ans1);
-	for (int i = 0; i <= n; ++i) cout << i << ": " << ans1[i] << " - " << cnt[i] << " - " << pr[i] << endl;
-
-	cout << max_element(all(cnt)) - cnt.begin();
+	
+	priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
+	pq.push({0, 0});
+	cnt[0] = {0, 1};
+	oosp[0] = 1;
+	while (pq.size()){
+		ll v = pq.top().second,
+			 dist = pq.top().first;
+		for (auto u: g[v]){
+			if (cnt[u.first].first > dist + u.second){
+				cnt[u.first].first = dist + u.second;
+				cnt[u.first].second = 1;
+				oosp[u.first] = 1;
+				pred[u.first] = v;
+				pq.push({cnt[u.first].first, u.first});
+			}else if(cnt[u.first].first == dist + u.second){
+				cnt[u.first].second++;
+				oosp[u.first] = 0;
+			}
+		}
+		pq.pop();
+	}
+	
+	for (int i = 0; i < n; ++i)
+	 	cout << i+1 << " " << cnt[i].first << " " << cnt[i].second << endl;
+	
+	csp[0] = 0;
+	for (ll i = 0; i < n; ++i){
+		if (oosp[i]){
+			ll v = i;
+			while (v != 0 && pred[v] != -1){
+				csp[pred[v]]++;
+				v = pred[v];
+			}
+		}
+	}
+	
+	for (int i = 0; i < n; ++i)
+		cout << i+1 << " " << csp[i] << endl;
+	
+	ll mx = 0;
+	for (auto u: g[0])
+		mx = max(mx, csp[u.first]);
+	
+	cout << mx;
 
 	cerr << "Time: " << (float)clock() / CLOCKS_PER_SEC << " secs" << endl;
 	return 0;
