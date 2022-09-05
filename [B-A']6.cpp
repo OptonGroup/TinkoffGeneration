@@ -20,25 +20,69 @@ int INF = 2 << 28;
 void solve(){
 	string s;
 	cin >> s;
-	
-	// Delete middle
 	string max_s = "";
 	max_s += s[0];
-	cout << "#1 Best Result: " << max_s << endl;
 	string ns = "";
+	cout << "#1 Best Result: " << max_s << endl;
+	// Delete middle
 	int ind = 0;
 	while (ind < s.size()-ind-1 && s[ind] == s[s.size()-ind-1]){
 		ns+=s[ind];
 		ind++;
 	}
-	if (max_s.size() <= ns.size()*2){
-		max_s = ns;
-		if (ind == s.size()-ind-1)
-			max_s += s[ind];
-		reverse(all(ns));
-		max_s+= ns;
+	cout << ns << endl;
+	// Delete start
+	int temp = ind;
+	string pns = "";
+	while (ind < s.size()-temp){
+		if (s[ind] == s[s.size()-temp-1]){
+			int pl = 1;
+			pns = "";
+			pns += s[ind];
+			while (s.size()-temp-pl-1 >= ind+pl && s[s.size()-temp-pl-1] == s[ind+pl]){
+				pns+=s[ind+pl];
+				pl++;
+			}
+			if (max_s.size() <= ns.size()*2+pns.size()){
+				max_s = ns;
+				max_s += pns;
+				if (pl % 2 == 1) pns.pop_back();
+				reverse(all(pns));
+				max_s += pns;
+				reverse(all(ns));
+				max_s+= ns;
+			}
+		}
+		ind++;
 	}
+	
 	cout << "#2 Best Result: " << max_s << endl;
+	
+	// Delete End
+	ind = s.size()-temp-1;
+	while (ind >= temp){
+		if (s[temp] == s[ind]){
+			int pl = 1;
+			pns = "";
+			pns += s[0];
+			while (temp+pl <= ind-pl && s[temp+pl] == s[ind-pl]){
+				pns+=s[temp+pl];
+				pl++;
+			}
+			if (max_s.size() <= ns.size()*2+pns.size()){
+				max_s = ns;
+				max_s += pns;
+				if (pl % 2 == 1) pns.pop_back();
+				reverse(all(pns));
+				max_s += pns;
+				reverse(all(ns));
+				max_s+= ns;
+			}
+		}
+		ind--;
+	}
+	cout << "#3 Best Result: " << max_s << endl;
+
 	
 	// Delete End
 	ind = s.size();
