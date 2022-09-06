@@ -22,17 +22,17 @@ string get_max_str(string s){
 	
 	int ind = 0;
 	// Delete Start
-	while (ind < s.size()){
+	while (ind < s.size() && s.size()-ind > max_s.size()){
 		if (s[ind] == s.back()){
 			int pl = 0;
 			ns = "";
-			while (s[ind+pl] == s[s.size()-ind-pl] && ind+pl < s.size()-pl){
+			while (s[ind+pl] == s[s.size()-pl-1] && ind+pl < s.size()-pl-1){
 				ns += s[ind+pl];
 				pl++;
 			}
 			
 			if (ind+pl == s.size()-pl-1){
-				if (max_s.size()<ns.size()*2-1){
+				if (max_s.size()<ns.size()*2+1){
 					max_s = ns;
 					max_s += s[ind+pl];
 					reverse(all(ns));
@@ -54,17 +54,17 @@ string get_max_str(string s){
 	reverse(all(s));
 	ind = 0;
 	// Delete End
-	while (ind < s.size()){
+	while (ind < s.size() && s.size()-ind > max_s.size()){
 		if (s[ind] == s.back()){
 			int pl = 0;
 			ns = "";
-			while (s[ind+pl] == s[s.size()-ind-pl] && ind+pl < s.size()-pl){
+			while (s[ind+pl] == s[s.size()-pl-1] && ind+pl < s.size()-pl-1){
 				ns += s[ind+pl];
 				pl++;
 			}
 			
 			if (ind+pl == s.size()-pl-1){
-				if (max_s.size()<ns.size()*2-1){
+				if (max_s.size()<ns.size()*2+1){
 					max_s = ns;
 					max_s += s[ind+pl];
 					reverse(all(ns));
@@ -100,13 +100,18 @@ void solve(){
 	}
 	
 	string pns = "";
-	pns = get_max_str(s.substr(ind, s.size()-ind-ind));
+	if (ind > 0)
+		pns = get_max_str(s.substr(ind, s.size()-ind-ind));
+	else
+		pns = "";
 	if (max_s.size() <= ns.size()*2+pns.size()){
 		max_s=ns;
-		if (ind==s.size()-ind){
+		if (ind==s.size()-ind-1){
 			max_s += s[ind];
+		}else{
+			max_s+=pns;
 		}
-		max_s+=pns;
+		
 		reverse(all(ns));
 		max_s += ns;
 	}
