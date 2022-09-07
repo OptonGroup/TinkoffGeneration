@@ -20,13 +20,20 @@ int INF = 2 << 28;
 ll n;
 vector <vector<pair<ll, ll>>> g(500);
 vector <pair<ll, ll>> cnt(500, {INF, 0});
-vector <ll> oosp(500, 1), pred(500, -1), csp(500, 1);
+vector <ll> oosp(500, -1), pred(500, -1), csp(500, 1);
+
+void dfs(int v, int dist, int ver){
+	if (oosp[v] == -1) oosp[v] = ver;
+	else if (oosp[v] != ver) oosp[v] = 0;
+
+	for (auto u: g[v]){
+		if (cnt[u.first].first == dist+u.second){
+			dfs(u.first, dist+u.second, ver);
+		}
+	}
+}
 
 int main() {
-#ifndef ONLINE_JUDGE
-	freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout);
-#endif // !ONLINE_JUDGE
-	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 	cin >> n;
 	for (int i = 0; i < n; ++i){
 		for (int j = 0; j < n; ++j){
@@ -35,12 +42,6 @@ int main() {
 			if (v != -1 && i != j) 
 				g[i].push_back({j, v});
 		}
-	}
-	
-	for (int i = 0; i < n; ++i){
-		cout << i+1 << ": ";
-		for (auto u: g[i]) cout << u.first+1 << " ";
-		cout << endl;
 	}
 	
 	priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
@@ -54,23 +55,26 @@ int main() {
 			if (cnt[u.first].first > dist + u.second){
 				cnt[u.first].first = dist + u.second;
 				cnt[u.first].second = 1;
-				oosp[u.first] = 1;
 				pred[u.first] = v;
+				// oosp[u.first] = 1;
 				pq.push({cnt[u.first].first, u.first});
 			}else if(cnt[u.first].first == dist + u.second){
 				cnt[u.first].second++;
-				oosp[u.first] = 0;
+				// oosp[u.first] = 0;
 			}
 		}
 		pq.pop();
 	}
 	
-	for (int i = 0; i < n; ++i)
-	 	cout << i+1 << " " << cnt[i].first << " " << cnt[i].second << endl;
-	
+	for (auto u: g[0]){
+		if (cnt[u.first].first == u.second){
+			dfs(u.first, 1, u.first);
+		}
+	}
+
 	csp[0] = 0;
 	for (ll i = 0; i < n; ++i){
-		if (oosp[i]){
+		if (oosp[i] != 0 && oosp[i] != -1){
 			ll v = i;
 			while (v != 0 && pred[v] != -1){
 				csp[pred[v]]++;
@@ -78,9 +82,6 @@ int main() {
 			}
 		}
 	}
-	
-	for (int i = 0; i < n; ++i)
-		cout << i+1 << " " << csp[i] << endl;
 	
 	ll mx = 0;
 	for (auto u: g[0])
