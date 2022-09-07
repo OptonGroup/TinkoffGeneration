@@ -23,13 +23,24 @@ vector <pair<ll, ll>> cnt(500, {INF, 0});
 vector <ll> oosp(500, 1), pred(500, -1), csp(500, 1);
 
 int main() {
+#ifndef ONLINE_JUDGE
+	freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout);
+#endif // !ONLINE_JUDGE
+	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 	cin >> n;
-	for (ll i = 0; i < n; ++i){
-		for (ll j = 0; j < n; ++j){
+	for (int i = 0; i < n; ++i){
+		for (int j = 0; j < n; ++j){
 			ll v;
 			cin >> v;
-			if (v != -1 && i != j) g[i].push_back({j, v});
+			if (v != -1 && i != j) 
+				g[i].push_back({j, v});
 		}
+	}
+	
+	for (int i = 0; i < n; ++i){
+		cout << i+1 << ": ";
+		for (auto u: g[i]) cout << u.first+1 << " ";
+		cout << endl;
 	}
 	
 	priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
