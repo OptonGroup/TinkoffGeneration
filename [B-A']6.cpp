@@ -17,119 +17,73 @@ using namespace std;
 ll LINF = 2LL << 32LL;
 int INF = 2 << 28;
 
-string get_max_str(string s){
-	string ns = "", max_s = "";
-	
-	int ind = 0;
-	// Delete Start
-	while (ind < s.size() && s.size()-ind > max_s.size()){
-		if (s[ind] == s.back()){
-			int pl = 0;
-			ns = "";
-			while (s[ind+pl] == s[s.size()-pl-1] && ind+pl < s.size()-pl-1){
-				ns += s[ind+pl];
-				pl++;
-			}
-			
-			if (ind+pl == s.size()-pl-1){
-				if (max_s.size()<ns.size()*2+1){
-					max_s = ns;
-					max_s += s[ind+pl];
-					reverse(all(ns));
-					max_s += ns;
-				}
-			}else if (ind+pl > s.size()-pl-1){
-				if (max_s.size()< ns.size()*2){
-					max_s = ns;
-					reverse(all(ns));
-					max_s += ns;
-				}
-			}
-		}
-	
-		ind++;
-	}
-	
-	
-	reverse(all(s));
-	ind = 0;
-	// Delete End
-	while (ind < s.size() && s.size()-ind > max_s.size()){
-		if (s[ind] == s.back()){
-			int pl = 0;
-			ns = "";
-			while (s[ind+pl] == s[s.size()-pl-1] && ind+pl < s.size()-pl-1){
-				ns += s[ind+pl];
-				pl++;
-			}
-			
-			if (ind+pl == s.size()-pl-1){
-				if (max_s.size()<ns.size()*2+1){
-					max_s = ns;
-					max_s += s[ind+pl];
-					reverse(all(ns));
-					max_s += ns;
-				}
-			}else if (ind+pl > s.size()-pl-1){
-				if (max_s.size()< ns.size()*2){
-					max_s = ns;
-					reverse(all(ns));
-					max_s += ns;
-				}
-			}
-		}
-	
-		ind++;
-	}
-	
-	return max_s;
-}
-
-void solve(){
-	string s;
-	cin >> s;
-	string max_s = "";
-	max_s += s[0];
-	string ns = "";
-	
-	// Delete middle
-	int ind = 0;
-	while (ind < s.size()-ind-1 && s[ind] == s[s.size()-ind-1]){
-		ns+=s[ind];
-		ind++;
-	}
-	
-	string pns = "";
-	if (ind > 0)
-		pns = get_max_str(s.substr(ind, s.size()-ind-ind));
-	else
-		pns = "";
-	if (max_s.size() <= ns.size()*2+pns.size()){
-		max_s=ns;
-		if (ind==s.size()-ind-1){
-			max_s += s[ind];
-		}else{
-			max_s+=pns;
-		}
-		
-		reverse(all(ns));
-		max_s += ns;
-	}
-	
-	pns = get_max_str(s);
-	if (max_s.size() <= pns.size()){
-		max_s=pns;
-	}
-	
-	cout << max_s << endl;
-}
+ll n;
+vector <vector<pair<ll, ll>>> g(500);
+vector <pair<ll, ll>> cnt(500, {INF, 0});
+vector <ll> oosp(500, 1), pred(500, -1), csp(500, 1);
 
 int main() {
-	ll n;
 	cin >> n;
-	while (n--)
-		solve();
+	for (int i = 0; i < n; ++i){
+		for (int j = 0; j < n; ++j){
+			ll v;
+			cin >> v;
+			if (v != -1) 
+				g[i].push_back({j, v});
+		}
+	}
 	
+	for (int i = 0; i < n; ++i){
+		cout << i+1 << ": ";
+		for (auto u: g[i]) cout << u.first+1 << " ";
+		cout << endl;
+	}
+	
+	priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
+	pq.push({0, 0});
+	cnt[0] = {0, 1};
+	oosp[0] = 1;
+	while (pq.size()){
+		ll v = pq.top().second,
+			 dist = pq.top().first;
+		for (auto u: g[v]){
+			if (cnt[u.first].first > dist + u.second){
+				cnt[u.first].first = dist + u.second;
+				cnt[u.first].second = 1;
+				oosp[u.first] = 1;
+				pred[u.first] = v;
+				pq.push({cnt[u.first].first, u.first});
+			}else if(cnt[u.first].first == dist + u.second){
+				cnt[u.first].second++;
+				oosp[u.first] = 0;
+			}
+		}
+		pq.pop();
+	}
+	
+	for (int i = 0; i < n; ++i)
+	 	cout << i+1 << " " << cnt[i].first << " " << cnt[i].second << endl;
+	
+	csp[0] = 0;
+	for (ll i = 0; i < n; ++i){
+		if (oosp[i]){
+			ll v = i;
+			while (v != 0 && pred[v] != -1){
+				csp[pred[v]]++;
+				v = pred[v];
+			}
+		}
+	}
+	
+	for (int i = 0; i < n; ++i)
+		cout << i+1 << " " << csp[i] << endl;
+	
+	ll mx = 0;
+	for (auto u: g[0])
+		mx = max(mx, csp[u.first]);
+	
+	cout << mx;
+
 	cerr << "Time: " << (float)clock() / CLOCKS_PER_SEC << " secs" << endl;
 	return 0;
 }
