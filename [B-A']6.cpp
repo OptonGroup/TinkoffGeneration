@@ -36,9 +36,6 @@ struct polindrom_tree{
 			if (c == s[n-res[0][n-1]-1] && res[0][n] < res[0][n-1]+2){
 				res[0][n] = res[0][n-1]+2;
 			}
-			if (c == s[n-res[1][n-1]] && res[0][n] < res[1][n-1]+1){
-				res[0][n] = res[1][n-1]+1;
-			}
 			if (c == s[n-1] && res[0][n] < 2){
 				res[0][n] = 2;
 			}
@@ -139,10 +136,6 @@ void solve(){
 }
 
 int main() {
-#ifndef ONLINE_JUDGE
-	freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout);
-#endif // !ONLINE_JUDGE
-	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 	ll t;
 	cin >> t;
 	while (t--)
