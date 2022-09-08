@@ -12,14 +12,16 @@
 typedef long long ll;
 using namespace std;
 
-int len = 0;
-
 struct polindrom_tree{
-	string s = "";
-	int n = -1;
-	vector<vector<int>> res(2);
+	string s;
+	int n;
+	vector<vector<int>> res;
 	
-	polidron_tree(){{;]
+	polindrom_tree(){
+		s = "";
+		n = -1;
+		res.resize(2);
+	}
 	
 	void add_letter(char c){
 		s += c;
@@ -27,20 +29,41 @@ struct polindrom_tree{
 		res[0].push_back(-1);
 		res[1].push_back(-1);
 		
-		if (n > 0 && n-res[0][n-1]-1 > 0 && c == s[n-res[0][n-1]-1]){
-			res[0][n] = res[0][n-1]+2;
-		}else{
+		// Чётная длина
+		if (n == 0){
 			res[0][n] = 0;
-		}
-		
-		if (n > 0 && n-res[1][n-1]-1 > 0 && c == s[n-res[1][n-1]-1]){
-			res[1][n] = res[0][n-1]+2;
 		}else{
-			res[1][n] = 0;
+			if (c == s[n-res[0][n-1]-1] && res[0][n] < res[0][n-1]+2){
+				res[0][n] = res[0][n-1]+2;
+			}
+			if (c == s[n-res[1][n-1]] && res[0][n] < res[1][n-1]+1){
+				res[0][n] = res[1][n-1]+1;
+			}
+			if (c == s[n-1] && res[0][n] < 2){
+				res[0][n] = 2;
+			}
+			res[0][n] = max(res[0][n], 0);
+		}
+
+		// НеЧётная длина
+		if (n == 0){
+			res[1][n] = 1;
+		}else{
+			if (c == s[n-res[1][n-1]-1] && res[1][n] < res[1][n-1]+2){
+				res[1][n] = res[1][n-1]+2;
+			}
+			if (c == s[n-res[0][n-1]-1] && res[1][n] < res[0][n-1]+1){
+				res[1][n] = res[0][n-1]+1;
+			}
+			if (c == s[n-2] && res[1][n] < 3){
+				res[1][n] = 3;
+			}
+			res[1][n] = max(res[1][n], 1);
 		}
 	}
 	
 	ll max_letter(){
+		if (s.size() == 0) return 0;
 		return max(res[0].back(), res[1].back());
 	}
 };
@@ -48,7 +71,8 @@ struct polindrom_tree{
 void solve(){
 	string s;
 	cin >> s;
-	len = s.size();
+	int len = s.size();
+	string max_s = "";
 	
 	string ns = "";
 	int ind = 0;
@@ -56,20 +80,73 @@ void solve(){
 		ns += s[ind];
 		ind++;
 	}
+
+	// del middle left
+	string a = "";
+	for (int i = ind; i < len-ind; ++i) a += s[i];
+	polindrom_tree pt1;
+	for (auto u: a)
+		pt1.add_letter(u);
+	if (max_s.size() < ns.size()*2+pt1.max_letter()){
+		max_s = ns;
+		for (int i = 1; i <= pt1.max_letter(); ++i){
+			max_s += a[a.size()-i];
+		}
+		reverse(all(ns));
+		max_s += ns;
+		reverse(all(ns));
+	}
+
+	// del middle right
+	reverse(all(a));
+	polindrom_tree pt2;
+	for (auto u: a)
+		pt2.add_letter(u);
+	if (max_s.size() < ns.size()*2+pt2.max_letter()){
+		max_s = ns;
+		for (int i = 1; i <= pt2.max_letter(); ++i){
+			max_s += a[a.size()-i];
+		}
+		reverse(all(ns));
+		max_s += ns;
+		reverse(all(ns));
+	}
 	
-	polindrom_tree pt();
+	// del left
+	polindrom_tree pt3;
 	for (auto u: s)
-		pt.add_letter(u);
+		pt3.add_letter(u);
+	if (max_s.size() < pt3.max_letter()){
+		max_s = "";
+		for (int i = 1; i <= pt3.max_letter(); ++i){
+			max_s += s[s.size()-i];
+		}
+	}
+
+	// del right
+	reverse(all(s));
+	polindrom_tree pt4;
+	for (auto u: s)
+		pt4.add_letter(u);
+	if (max_s.size() < pt4.max_letter()){
+		max_s = "";
+		for (int i = 1; i <= pt4.max_letter(); ++i){
+			max_s += s[s.size()-i];
+		}
+	}
 		
-	cout << pt.max_len() << endl;
+	cout << max_s << endl;
 }
 
 int main() {
+#ifndef ONLINE_JUDGE
+	freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout);
+#endif // !ONLINE_JUDGE
+	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 	ll t;
 	cin >> t;
 	while (t--)
 		solve();
-
 
     cerr << "Time: " << (float)clock() / CLOCKS_PER_SEC << " secs" << endl;
     return 0;
