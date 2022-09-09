@@ -23,15 +23,15 @@ struct polindrom_tree{
 		k = 0;
 		last = 1;
 		g.resize(2, vector<int>(35));
-		len.push_back(-1);
+		len.push_back(0);
 		len.push_back(0);
 		
-		link.push_back(-1);
+		link.push_back(0);
 		link.push_back(0);
 	}
 	
 	int find_link(int v){
-		while (s[k-len[v]-1] != s[k]){
+		while (v > 0 && s[k-len[v]-1] != s[k]){
 			v = link[v];
 		}
 		return v;
@@ -42,9 +42,18 @@ struct polindrom_tree{
 		s += c;
 		int q = find_link(last);
 		if (g[q][c - 'a'] == 0){
-			
+			g.push_back(vector<int>(35, 0));
+            int p = g.size()-1;
+            len[p] = len[q]+2;
+            g[q][c - 'a'] = 1;
+            link.push_back(find_link(link[q]));
+            last = p;
 		}
 	}
+
+    int max_letter(){
+        return len[last];
+    }
 };
 
 void solve(){
