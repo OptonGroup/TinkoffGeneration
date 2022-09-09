@@ -13,47 +13,39 @@ typedef long long ll;
 using namespace std;
 
 struct polindrom_tree{
-	string s;
-	int k, last;
-	vector <int> len, link;
-	vector <vector<int>> g;
-	
-	polindrom_tree(){
-		s = "#";
-		k = 0;
-		last = 1;
-		g.resize(2, vector<int>(35));
-		len.push_back(0);
-		len.push_back(0);
-		
-		link.push_back(0);
-		link.push_back(0);
-	}
-	
-	int find_link(int v){
-		while (v > 0 && s[k-len[v]-1] != s[k]){
-			v = link[v];
-		}
-		return v;
-	}
-	
-	void add_letter(char c){
-		k++;
-		s += c;
-		int q = find_link(last);
-		if (g[q][c - 'a'] == 0){
-			g.push_back(vector<int>(35, 0));
-            int p = g.size()-1;
-            len[p] = len[q]+2;
-            g[q][c - 'a'] = 1;
-            link.push_back(find_link(link[q]));
-            last = p;
-		}
-	}
+	const int maxn = 1e5, k = 26;
 
-    int max_letter(){
-        return len[last];
+int s[maxn], len[maxn], link[maxn], to[maxn][k];
+
+int n, last, sz;
+
+void init() {
+    s[n++] = -1;
+    link[0] = 1;
+    len[1] = -1;
+    sz = 2;
+}
+
+int get_link(int v) {
+    while (s[n-len[v]-2] != s[n-1])
+        v = link[v];
+    return v;
+}
+
+void add_letter(int c) {
+    s[n++] = c;
+    last = get_link(last);
+    if (!to[last][c]) {
+        len[sz] = len[last] + 2;
+        link[sz] = to[get_link(link[last])][c];
+        to[last][c] = sz++;
     }
+    last = to[last][c];
+}
+
+int max_len(){
+	return len[last];
+}
 };
 
 void solve(){
