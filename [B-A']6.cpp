@@ -12,18 +12,21 @@
 typedef long long ll;
 using namespace std;
 
-const int maxn = 1e6+1000, k = 26;
+const int k = 30;
 
-int str[maxn], len[maxn], link[maxn], to[maxn][k];
+vector <int> link, len, str;
+vector <vector<int>> to;
 
 int n, last, sz;
 
-void init() {
-	fill(link, link + maxn, 0);
-	fill(str, str + maxn, 0);
-	fill(len, len + maxn, 0);
+void init(int size_s) {
+	size_s += 5;
+	link = vector<int> (size_s, 0);
+	len = vector<int> (size_s, 0);
+	str = vector<int> (size_s, 0);
+	to = vector<vector<int>> (size_s, vector<int>(k, 0));
 	n = 0;
-	last = 1;
+	last = 0;
 	str[n++] = -1;
 	link[0] = 1;
 	len[1] = -1;
@@ -68,7 +71,7 @@ void solve() {
 	// del middle left
 	string a = "";
 	for (int i = ind; i < len - ind; ++i) a += s[i];
-	init();
+	init(a.size());
 	for (auto u : a)
 		add_letter(u);
 	if (max_s.size() < ns.size() * 2 + max_letter()) {
@@ -83,7 +86,7 @@ void solve() {
 
 	// del middle right
 	reverse(all(a));
-	init();
+	init(a.size());
 	for (auto u : a)
 		add_letter(u);
 	if (max_s.size() < ns.size() * 2 + max_letter()) {
@@ -97,7 +100,7 @@ void solve() {
 	}
 
 	// del left
-	init();
+	init(s.size());
 	for (auto u : s)
 		add_letter(u);
 	if (max_s.size() < max_letter()) {
@@ -109,7 +112,7 @@ void solve() {
 
 	// del right
 	reverse(all(s));
-	init();
+	init(s.size());
 	for (auto u : s)
 		add_letter(u);
 	if (max_s.size() < max_letter()) {
@@ -123,7 +126,6 @@ void solve() {
 }
 
 int main() {
-	ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 	ll t;
 	cin >> t;
 	while (t--)
