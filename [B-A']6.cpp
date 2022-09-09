@@ -14,54 +14,36 @@ using namespace std;
 
 struct polindrom_tree{
 	string s;
-	int n;
-	vector<vector<int>> res;
+	int k, last;
+	vector <int> len, link;
+	vector <vector<int>> g;
 	
 	polindrom_tree(){
-		s = "";
-		n = -1;
-		res.resize(2);
+		s = "#";
+		k = 0;
+		last = 1;
+		g.resize(2, vector<int>(35));
+		len.push_back(-1);
+		len.push_back(0);
+		
+		link.push_back(-1);
+		link.push_back(0);
+	}
+	
+	int find_link(int v){
+		while (s[k-len[v]-1] != s[k]){
+			v = link[v];
+		}
+		return v;
 	}
 	
 	void add_letter(char c){
+		k++;
 		s += c;
-		n++;
-		res[0].push_back(-1);
-		res[1].push_back(-1);
-		
-		// Чётная длина
-		if (n == 0){
-			res[0][n] = 0;
-		}else{
-			if (c == s[n-res[0][n-1]-1] && res[0][n] < res[0][n-1]+2){
-				res[0][n] = res[0][n-1]+2;
-			}
-			if (c == s[n-1] && res[0][n] < 2){
-				res[0][n] = 2;
-			}
-			res[0][n] = max(res[0][n], 0);
+		int q = find_link(last);
+		if (g[q][c - 'a'] == 0){
+			
 		}
-
-		// НеЧётная длина
-		if (n == 0){
-			res[1][n] = 1;
-		}else{
-			if (c == s[n-res[1][n-1]-1] && res[1][n] < res[1][n-1]+2){
-				res[1][n] = res[1][n-1]+2;
-			}
-			if (c == s[n-res[0][n-1]-1] && res[1][n] < res[0][n-1]+1){
-				res[1][n] = res[0][n-1]+1;
-			}
-			if (c == s[n-2] && res[1][n] < 3){
-				res[1][n] = 3;
-			}
-			res[1][n] = max(res[1][n], 1);
-		}
-	}
-	
-	ll max_letter(){
-		if (s.size() == 0) return 0;
-		return max(res[0].back(), res[1].back());
 	}
 };
 
