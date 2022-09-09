@@ -6,25 +6,23 @@
 #include <functional>
 #include <cctype>
 #include <string>
-#include <iomanip>
+#include <map>
 #define endl '\n'
 #define all(x) x.begin(), x.end()
 typedef long long ll;
 using namespace std;
 
-const int k = 30;
-
 vector <int> link, len, str;
-vector <vector<int>> to;
+vector <map<int, int>> to;
 
 int n, last, sz;
 
 void init(int size_s) {
-	size_s += 5;
+	size_s += 50;
 	link = vector<int> (size_s, 0);
 	len = vector<int> (size_s, 0);
 	str = vector<int> (size_s, 0);
-	to = vector<vector<int>> (size_s, vector<int>(k, 0));
+	to = vector<map<int, int>> (size_s);
 	n = 0;
 	last = 0;
 	str[n++] = -1;
